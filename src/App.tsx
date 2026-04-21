@@ -21,9 +21,6 @@ function App() {
           <NavLink to="/" className={({ isActive }) => navClassName(isActive)}>
             首页
           </NavLink>
-          <NavLink to="/items/new" className="bottom-nav__action">
-            新增
-          </NavLink>
           <NavLink to="/settings" className={({ isActive }) => navClassName(isActive)}>
             设置
           </NavLink>
