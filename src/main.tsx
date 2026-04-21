@@ -11,7 +11,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {
+    const swUrl = new URL('sw.js', import.meta.env.BASE_URL).toString();
+    navigator.serviceWorker.register(swUrl).catch(() => {
       // The app still works as a normal website if service worker registration fails.
     });
   });

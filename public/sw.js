@@ -1,16 +1,19 @@
-const CACHE_NAME = 'things-record-v1.0.0';
+const CACHE_NAME = 'things-record-v2.0.0';
 const APP_SHELL = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/favicon.svg',
-  '/apple-touch-icon.svg',
-  '/pwa-192x192.svg',
-  '/pwa-512x512.svg'
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './favicon.svg',
+  './apple-touch-icon.svg',
+  './pwa-192x192.svg',
+  './pwa-512x512.svg'
 ];
 
+const appUrl = new URL('./', self.registration.scope);
+const appShellUrls = APP_SHELL.map((path) => new URL(path, appUrl).toString());
+
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(appShellUrls)));
   self.skipWaiting();
 });
 
@@ -31,10 +34,14 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then((response) => {
+        if (!response || response.status !== 200 || response.type === 'opaque') {
+          return response;
+        }
+
         const responseClone = response.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
         return response;
       })
-      .catch(() => caches.match(event.request).then((cachedResponse) => cachedResponse ?? caches.match('/index.html')))
+      .catch(() => caches.match(event.request).then((cachedResponse) => cachedResponse ?? caches.match(new URL('./index.html', appUrl).toString())))
   );
 });
